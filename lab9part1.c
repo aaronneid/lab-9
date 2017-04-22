@@ -32,7 +32,7 @@ int main(int argc, char **argv){
 	PBDR = BasePtr + 1;		// Address of port B DR is 0x80840004
     PBDDR = BasePtr + 5;	// Address of port B DDR is 0x80840014
 
-    *PBDDR |= 0x80;			// configures port B7 as output (Green LED)
+    *PBDDR |= 0xE0;			// configures port B7 as output (Green LED)
 	*PBDDR &= 0xFFFFFFFE;	// configures port B0 as input (first push button). You could use: &= ~0x01
 
 	// The program will turn on the green LED, sleep for a while, then off, sleep, then on again, then off.
@@ -42,9 +42,31 @@ int main(int argc, char **argv){
 	sleep(1);		// How can you sleep for less than a second?
     *PBDR &= ~0x80;	// OFF: write a 0 to port B0. Mask all other bits.
     sleep(1);
-    *PBDR |= 0x80;
-	sleep(2);
-    *PBDR &= ~0x80;
+
+	for(int i = 0; i < 3; i++){
+		*PBDR |= 0x20;		//red on
+		sleep(1);
+		*PBDR &= 0xDF;		//red off
+		sleep(1);		
+	}
+	
+	for(int i = 0; i < 4; i++){
+		*PBDR |= 0x40;		//yellow on
+		sleep(1);
+		*PBDR &= 0xBF;		//yellow off
+		sleep(1);		
+	}
+	
+	for(int i = 0; i < 4; i++){
+		*PBDR |= 0x40;		//yellow on
+		*PBDR |= 0x20;		//red on
+		*PBDR |= 0x80;	//green on
+		sleep(1);
+		*PBDR &= 0xBF;		//yellow off
+		*PBDR &= ~0x80;	//green off
+		*PBDR &= 0xDF;		//red off
+		sleep(1);		
+	}
 
 	// If you wanted to read the status of Port B0, how could you do it?
 
